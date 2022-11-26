@@ -21,13 +21,23 @@ import (
 	"crypto/aes"
 	"crypto/sha256"
 	"crypto/cipher"
-    "crypto/rand"
+	"crypto/rand"
 	"strings"
 	"io"
 )
 
+
+//check if vault.aes exists 
+func exis() bool{
+	_, err := os.Stat("vault.aes")
+	checker := os.IsNotExist(err)
+	return checker
+}
+
 //a function to handle errora
 func check(err error) {
+
+
 	if err != nil{
 		log.Fatal(err)
 	}
@@ -73,15 +83,6 @@ func decrypt(data string, key string) string{
     c, err := aes.NewCipher([]byte(key))
     check(err)
  
-    /*
-    pt := make([]byte, len(data))
-    c.Decrypt(pt, ciphertext)
- 
-    s := string(pt[:])
-    return s
-    */
-
-
     gmc, err := cipher.NewGCM(c)
     check(err)
 
@@ -103,6 +104,7 @@ func getFileContents() string{
 	//this will read the file
 	data, err := os.ReadFile("vault.aes")
 	check(err)
+
 
 	return string(data)
 }
@@ -142,7 +144,6 @@ func makeNewVault(text string) {
 
 
 func main(){
-
 	const masterPassword string  = "d35ed0ad3351706a7810e0c9dbd4b006e532a79f601e814e843056db0952556e"//thisis32bitlongpassphraseimusing
 
 	var password string
@@ -159,19 +160,22 @@ func main(){
 			bs := h.Sum(nil)
 
 			if string(hex.EncodeToString(bs)) == masterPassword {
-				fmt.Println("fuck")
 				break
 			}else {
 				attempt++
 			}
 		}
 	}
-
+	//if the vault.ase dose not exist
+	if exis() == true{
+		newData := encrypt("password manager 1.0\nusername    password   site\n----------------------------------\n", password)
+		makeNewVault(newData)
+	}
 
 	for {
 		fmt.Println(`
 
-			passwords are decrypted in memory
+passwords are decrypted in memory
 
 [0] show passwords
 [1] add password
@@ -190,6 +194,7 @@ func main(){
 				data := decrypt(getFileContents(), password)
 				showPasswords(data)
 				continue
+
 			case 1:
 				//decrypt the data
 				data := decrypt(getFileContents(), password)
@@ -200,10 +205,13 @@ func main(){
 
 				//write the new encrypted string to the file
 				makeNewVault(newData)
+
+
 			case 2:
-				newData := encrypt("password manager 1.0\n", password)
+				newData := encrypt("password manager 1.0\nusername    password   site\n----------------------------------\n", password)
 				makeNewVault(newData)
 			case 3:
+
 				os.Exit(3) 
 		}
 	}
