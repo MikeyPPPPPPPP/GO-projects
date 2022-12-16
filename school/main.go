@@ -101,16 +101,13 @@ func PickClass(s us.School) us.Class{
 }
 
 func main(){
-	//var first us.Class
-	//first.Teacher = "Michael"
-	//first.Students = append(first.Students, us.Student{"sash", "provenzano", map[string]string{"math":"A", "science":"B"}, 4})
 
 	var ms us.School
 
 	//temp
 	var first us.Class
 	first.Teacher = "Michael"
-	first.Students = append(first.Students, us.Student{"sash", "prov", map[string]string{"math":"A", "science":"B", "history":"B"}, 4})
+	first.Students = append(first.Students, us.Student{"mich", "prov", map[string]string{"math":"A", "science":"B", "history":"B"}, 4})
 
 	ms.Classes = append(ms.Classes, first)
 
